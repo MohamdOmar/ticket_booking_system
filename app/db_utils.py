@@ -1,16 +1,26 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date
 import logging
-from .database import execute_query, DatabaseError, NotFoundError, DuplicateBookingError
+from .database import execute_query, DatabaseError, NotFoundError, DuplicateBookingError, DuplicateUserError
 
 logger = logging.getLogger(__name__)
 
-def create_user(name: str, email: str) -> int:
-    """Create a new user and return their ID"""
-    query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+def create_user(name: str, email: str) -> dict:
+    """Create a new user with validation checks"""
     try:
-        return execute_query(query, (name, email), fetch=False)
-    except DatabaseError as e:
+        # Check if email already exists
+        query = "SELECT * FROM users WHERE email = %s"
+        result = execute_query(query, (email,))
+        if result:
+            raise DuplicateUserError("Email already exists")
+            
+        # Create the user
+        query = "INSERT INTO users (name, email) VALUES (%s, %s)"
+        user_id = execute_query(query, (name, email), fetch=False)
+        
+        # Return the newly created user
+        return get_user_by_id(user_id)
+    except Exception as e:
         raise DatabaseError(f"Failed to create user: {str(e)}")
 
 def get_user_by_id(user_id: int) -> Dict[str, Any]:
@@ -34,16 +44,19 @@ def get_all_users() -> List[Dict[str, Any]]:
     query = "SELECT * FROM users"
     return execute_query(query)
 
-def create_event(name: str, date: datetime, capacity: int) -> int:
-    """Create a new event and return its ID."""
+def create_event(name: str, date: date, capacity: int) -> dict:
+    """Create a new event with validation checks"""
     try:
-        # Format the date for MySQL
-        mysql_date = date.strftime('%Y-%m-%d')
-        
+        # Validate capacity
+        if capacity <= 0:
+            raise DatabaseError("Capacity must be greater than 0")
+            
+        # Create the event
         query = "INSERT INTO events (name, date, capacity) VALUES (%s, %s, %s)"
-        params = (name, mysql_date, capacity)
+        event_id = execute_query(query, (name, date, capacity), fetch=False)
         
-        return execute_query(query, params, fetch=False)
+        # Return the newly created event
+        return get_event_by_id(event_id)
     except Exception as e:
         raise DatabaseError(f"Failed to create event: {str(e)}")
 
@@ -93,6 +106,12 @@ def create_booking(user_id: int, event_id: int) -> dict:
         current_bookings = get_booking_count(event_id)
         if current_bookings >= event['capacity']:
             raise DatabaseError("Event is at full capacity")
+            
+        # Check for duplicate booking
+        query = "SELECT * FROM bookings WHERE user_id = %s AND event_id = %s"
+        result = execute_query(query, (user_id, event_id))
+        if result:
+            raise DuplicateBookingError("User has already booked this event")
             
         # Create the booking
         query = "INSERT INTO bookings (user_id, event_id) VALUES (%s, %s)"

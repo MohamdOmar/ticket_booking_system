@@ -80,8 +80,7 @@ class Booking(BookingBase):
 @app.post("/users/", response_model=User)
 def create_user(user: UserCreate):
     try:
-        user_id = db_utils.create_user(user.name, user.email)
-        return db_utils.get_user_by_id(user_id)
+        return db_utils.create_user(user.name, user.email)
     except DuplicateUserError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except DatabaseError as e:
@@ -107,8 +106,7 @@ def get_users():
 @app.post("/events/", response_model=Event)
 def create_event(event: EventCreate):
     try:
-        event_id = db_utils.create_event(event.name, event.date, event.capacity)
-        return db_utils.get_event_by_id(event_id)
+        return db_utils.create_event(event.name, event.date, event.capacity)
     except DatabaseError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
