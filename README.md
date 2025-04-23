@@ -15,7 +15,7 @@ A FastAPI-based ticket booking system that allows users to book tickets for even
 - Python 3.x
 - FastAPI
 - MySQL
-- SQLAlchemy
+- mysql-connector-python
 - Pydantic
 
 ## Setup
