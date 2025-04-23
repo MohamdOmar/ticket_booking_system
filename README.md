@@ -71,6 +71,3 @@ Once the server is running, you can access the API documentation at:
 - GET /events/{event_id}/bookings - Get bookings for an event
 - GET /users/{user_id}/bookings - Get bookings for a user
 
-## License
-
-MIT 
