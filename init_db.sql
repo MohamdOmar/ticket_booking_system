@@ -1,5 +1,4 @@
 -- Create the database
--- DROP DATABASE IF EXISTS ticket_booking;
 CREATE DATABASE IF NOT EXISTS ticket_booking;
 USE ticket_booking;
 
