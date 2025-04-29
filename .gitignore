@@ -37,3 +37,7 @@ ENV/
 # Database
 *.db
 *.sqlite3 
+
+# unused files
+seed_database.py
+app/__init__.py

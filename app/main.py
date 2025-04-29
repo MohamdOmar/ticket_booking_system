@@ -5,14 +5,6 @@ from pydantic import BaseModel, EmailStr, constr, field_validator
 from datetime import datetime, date
 from . import db_utils
 from .database import DatabaseError, NotFoundError, DuplicateBookingError, DuplicateUserError
-import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Event Ticket Booking System",

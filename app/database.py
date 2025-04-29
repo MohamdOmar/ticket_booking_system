@@ -79,28 +79,28 @@ def execute_query(query: str, params: tuple = None, fetch: bool = True) -> List[
         if connection:
             connection.close()
 
-def execute_many_queries(queries: List[str], database: Optional[str] = None) -> None:
-    """
-    Execute multiple queries in a single transaction.
-    Useful for initialization scripts.
-    """
-    connection = None
-    cursor = None
-    try:
-        connection = get_connection(database)
-        cursor = connection.cursor()
+# def execute_many_queries(queries: List[str], database: Optional[str] = None) -> None:
+#     """
+#     Execute multiple queries in a single transaction.
+#     Useful for initialization scripts.
+#     """
+#     connection = None
+#     cursor = None
+#     try:
+#         connection = get_connection(database)
+#         cursor = connection.cursor()
         
-        for query in queries:
-            if query.strip():
-                cursor.execute(query)
+#         for query in queries:
+#             if query.strip():
+#                 cursor.execute(query)
                 
-        connection.commit()
-    except Error as e:
-        if connection:
-            connection.rollback()
-        raise DatabaseError(f"Failed to execute queries: {str(e)}")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close() 
+#         connection.commit()
+#     except Error as e:
+#         if connection:
+#             connection.rollback()
+#         raise DatabaseError(f"Failed to execute queries: {str(e)}")
+#     finally:
+#         if cursor:
+#             cursor.close()
+#         if connection:
+#             connection.close() 

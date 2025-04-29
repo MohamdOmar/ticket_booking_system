@@ -1,9 +1,9 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date
-import logging
+# import logging
 from .database import execute_query, DatabaseError, NotFoundError, DuplicateBookingError, DuplicateUserError
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 def create_user(name: str, email: str) -> dict:
     """Create a new user with validation checks"""
@@ -31,13 +31,13 @@ def get_user_by_id(user_id: int) -> Dict[str, Any]:
         raise NotFoundError(f"User with ID {user_id} not found")
     return result[0]
 
-def get_user_by_email(email: str) -> Dict[str, Any]:
-    """Get a user by their email"""
-    query = "SELECT * FROM users WHERE email = %s"
-    result = execute_query(query, (email,))
-    if not result:
-        raise NotFoundError(f"User with email {email} not found")
-    return result[0]
+# def get_user_by_email(email: str) -> Dict[str, Any]:
+#     """Get a user by their email"""
+#     query = "SELECT * FROM users WHERE email = %s"
+#     result = execute_query(query, (email,))
+#     if not result:
+#         raise NotFoundError(f"User with email {email} not found")
+#     return result[0]
 
 def get_all_users() -> List[Dict[str, Any]]:
     """Get all users"""
@@ -74,7 +74,7 @@ def get_event_by_id(event_id: int) -> dict:
 def get_all_events() -> List[dict]:
     """Get all events."""
     try:
-        query = "SELECT id, name, DATE(date) as date, capacity FROM events"
+        query = "SELECT id, name, date, capacity FROM events"
         return execute_query(query)
     except Exception as e:
         raise DatabaseError(f"Failed to get events: {str(e)}")
@@ -94,10 +94,7 @@ def create_booking(user_id: int, event_id: int) -> dict:
             
         # Check if event is in the past
         event_date = event['date']
-        if isinstance(event_date, str):
-            event_date = datetime.strptime(event_date, '%Y-%m-%d')
-        elif isinstance(event_date, date):
-            event_date = datetime.combine(event_date, datetime.min.time())
+        event_date = datetime.combine(event_date, datetime.min.time())
             
         if event_date < datetime.now():
             raise DatabaseError("Cannot book past events")
